@@ -18,14 +18,19 @@ This is a **single-page application** with no build tools. The main file is `gem
 
 1. **Periodic Grid** (CSS Grid Layout)
    - 18 columns × 10 rows for standard periodic table layout
+   - Element tiles: 60×60px (compact), gap 6px
    - Elements dynamically positioned based on `xpos` and `ypos` from API
-   - Each element is an interactive card with hover effects
+   - Each element is an interactive card with category-colored hover effects
+   - Wikipedia icon appears on hover, click to open German Wikipedia page
 
-2. **Info Panel**
-   - Positioned at grid-column 3/9, grid-row 1/4
-   - Shows element details on hover (symbol, name, properties, electron config)
-   - Includes 8 information fields in 2x4 grid
-   - Smart hide/show logic: Panel stays visible when hovering from element to panel
+2. **Info Panel** (Ultra-Compact 4-Column Layout)
+   - **Position:** grid-column 3/13, grid-row 1/4 (between Beryllium and Boron)
+   - **Layout:** 4 columns × 2 rows = 8 fields
+   - **Fields displayed:**
+     - Row 1: Zustand | Dichte | Schmelzpunkt | Siedepunkt
+     - Row 2: P/N | Kategorie | A-Gewicht | E-Config
+   - **Smart Hover Logic:** 150ms delay + `:hover` check prevents panel hide during transition
+   - **Responsive:** Stays visible when hovering from element to panel
 
 3. **Theme System**
    - CSS custom properties (variables) for dark/light themes
@@ -79,15 +84,22 @@ Light theme (`body.light-theme`):
 ## Common Tasks
 
 ### Styling Changes
-- **Element appearance**: Modify `.element` and `.cat-*` classes
-- **Theme adjustment**: Edit `:root` (dark) or `body.light-theme` rules
-- **Info panel layout**: Adjust `.info-panel`, `.info-grid`, `.info-item` dimensions
-- **Responsive**: Adjust `grid-template-columns` (currently 18 × 80px), gap sizes
+- **Element appearance**: Modify `.element` (currently 60×60px) and `.cat-*` category classes
+  - Font sizes: `.el-symbol` (0.95rem), `.el-name` (0.45rem), `.el-number` (0.55rem)
+  - Adjust `grid-template-columns: repeat(18, 60px)` for different element sizes
+- **Info panel sizing**: Edit `.info-grid` (currently `grid-template-columns: 1fr 1fr 1fr 1fr`)
+  - Item sizes: `.info-label` (0.4rem), `.info-value` (0.5rem)
+  - Panel dimensions: grid-column 3/13, grid-row 1/4, padding 0.8rem
+- **Theme colors**: Edit `:root` (dark) or `body.light-theme` CSS variables
+- **Hover effects**: Category-specific glows in `.cat-*:hover` rules
 
 ### Adding Features
-- **New element property display**: Add `<div class="info-item">` in info-panel HTML, update `updateInfo()` function
-- **New theme**: Add `body.new-theme` selectors for all modified properties
-- **Category filtering**: Add button that toggles `.hidden` or similar on element categories
+- **New info field**: Add `<div class="info-item">` to `.info-grid` in HTML
+  - Update `updateInfo()` JavaScript function to set value: `document.getElementById('id').textContent = ...`
+  - Adjust `.info-grid` column count if adding more than 8 fields
+- **Element click behavior**: Modify `elDiv.addEventListener('click', ...)`
+- **New theme**: Add `body.new-theme { --bg-color: ..., --text-main: ..., etc }` rules
+- **Category filtering**: Add button with `addEventListener('click', () => { document.querySelectorAll('.cat-NAME').forEach(...) })`
 
 ### Data Updates
 - Element data loads from external API (no local cache)
@@ -131,10 +143,14 @@ Categories are mapped from JSON category string to CSS class:
 
 ## Performance Considerations
 
-- 118 elements created dynamically (no pre-rendering)
-- Animations use CSS `transition` with `cubic-bezier()` easing
-- Hover effects: `box-shadow` and `transform` (GPU-accelerated)
-- No debouncing needed for hover events (threshold already 150ms)
+- **118 elements** created dynamically on page load (no pre-rendering)
+- **Compact layout:** 60×60px elements + 6px gap fit entire periodic table on most screens
+- **Smooth animations:** CSS `transition` with `cubic-bezier(0.4, 0, 0.2, 1)` easing
+- **Hover effects:** Category-colored glows (`box-shadow`) and scale transforms (GPU-accelerated)
+- **Smart timeouts:** 150ms delay on element mouseleave prevents flickering during panel hover
+- **LocalStorage:** Theme preference saved to avoid recalculation
+- **No dependencies:** Vanilla JavaScript = fast load, no bundle overhead
+- **API caching:** Browser caches JSON fetch within session
 
 ## Browser Requirements
 

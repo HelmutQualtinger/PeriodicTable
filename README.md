@@ -1,29 +1,27 @@
 # 🧪 Modernes Periodensystem - Interactive Periodic Table
 
-Ein interaktives, modernes Periodensystem mit Dunkelmodus/Hellmodus, detailliertem Info-Panel und Wikipedia-Integration.
+Ein interaktives, hochoptimiertes Periodensystem mit Dark/Light Theme, kompaktem 4-spaltigem Info-Panel und Wikipedia-Integration.
 
 ## ✨ Features
 
 ### 🎨 Design & Styling
 - **Dark/Light Theme** - Umschalten zwischen Dunkelmodus (Standard) und Hellmodus mit hohem Kontrast
-- **Modernes UI** - Glasmorphismus-Effekte, sanfte Übergänge und responsive Hover-Effekte
-- **Farbcodierung** - 11 verschiedene Elementkategorien mit visuellen Unterscheidungen:
+- **Modernes UI** - Glasmorphismus-Effekte, sanfte Übergänge und optimierte Hover-Effekte
+- **Kompakte Elemente** - 60×60px Kacheln für optimale Übersicht
+- **Farbcodierung** - 11 Elementkategorien mit visuellen Unterscheidungen:
   - Alkalimetalle, Erdalkalimetalle, Übergangsmetalle
   - Nichtmetalle, Edelgase, Halogene
   - Halbmetalle, Lanthanide, Actinide
   - Post-Übergansmetalle, Unbekannte Elemente
 
-### 📊 Interaktives Info-Panel
-Beim Hovern über ein Element erscheint ein kompaktes Info-Panel mit:
-- **Symbol & Name** - Großes Elementsymbol mit deutschem Namen
-- **Physikalische Eigenschaften**:
-  - Aggregatzustand (Fest, Flüssig, Gasförmig)
-  - Dichte (g/cm³)
-  - Schmelz- und Siedepunkte (K)
-  - Protonen/Neutronen
-  - Kategorie
-- **Elektronenkonfiguration** - Gekürzte Darstellung
-- **Standardatomgewicht** - Atomare Masseneinheiten (u)
+### 📊 Ultra-Kompaktes Info-Panel
+Beim Hovern über ein Element erscheint ein 4-spaltiges Info-Panel zwischen Beryllium und Bor:
+- **Symbol & Name** - Elementsymbol mit deutschem Namen
+- **8 Informationsfelder in kompaktem 4×2 Layout:**
+  - Aggregatzustand, Dichte, Schmelzpunkt, Siedepunkt
+  - Protonen/Neutronen, Kategorie, Atomgewicht, Elektronenkonfiguration
+- **Smart Hover Logic** - Panel bleibt sichtbar beim Übergang vom Element zum Panel
+- **Position** - Im leeren Bereich zwischen Be (Spalte 2) und B (Spalte 13)
 
 ### 🔗 Wikipedia Integration
 - **📖 Wikipedia-Link** - Klick auf jedes Element öffnet die deutsche Wikipedia-Seite
