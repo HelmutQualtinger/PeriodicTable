@@ -152,9 +152,9 @@
 
         .info-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4px;
-            font-size: 0.65rem;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 3px;
+            font-size: 0.6rem;
             flex: 1;
             overflow-y: auto;
         }
@@ -163,25 +163,28 @@
             display: flex;
             flex-direction: column;
             gap: 1px;
-            padding: 4px 6px;
+            padding: 3px 4px;
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 4px;
+            border-radius: 3px;
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .info-label {
             color: var(--text-muted);
-            font-size: 0.5rem;
+            font-size: 0.45rem;
             text-transform: uppercase;
-            letter-spacing: 0.3px;
+            letter-spacing: 0.2px;
             font-weight: 600;
-            opacity: 0.8;
+            opacity: 0.75;
+            line-height: 1;
         }
 
         .info-value {
             font-weight: 500;
             color: var(--text-main);
-            font-size: 0.6rem;
+            font-size: 0.55rem;
+            line-height: 1.1;
+            word-break: break-word;
         }
 
         .full-width {
@@ -433,7 +436,7 @@
                 <div class="info-item"><span class="info-label">P/N</span><span class="info-value" id="infoPN"></span></div>
                 <div class="info-item"><span class="info-label">Kategorie</span><span class="info-value" id="infoCategory"></span></div>
                 <div class="info-item"><span class="info-label">Gewicht</span><span class="info-value" id="infoIsotope"></span></div>
-                <div class="info-item"><span class="info-label">Config</span><span class="info-value" id="infoElectron" style="font-size: 0.65rem; line-height: 1.2;"></span></div>
+                <div class="info-item"><span class="info-label">Config</span><span class="info-value" id="infoElectron"></span></div>
             </div>
         </div>
     </div>
