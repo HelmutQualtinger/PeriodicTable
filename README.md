@@ -2,6 +2,10 @@
 
 Ein interaktives, hochoptimiertes Periodensystem mit Dark/Light Theme, kompaktem 4-spaltigem Info-Panel und Wikipedia-Integration.
 
+## 🚀 [Live Demo](https://helmutqualtinger.github.io/PeriodicTable/)
+
+**[➡️ Klick hier zur Live-Demo öffnen](https://helmutqualtinger.github.io/PeriodicTable/)**
+
 ## ✨ Features
 
 ### 🎨 Design & Styling
