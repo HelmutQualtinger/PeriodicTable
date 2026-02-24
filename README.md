@@ -36,6 +36,14 @@ Beim Hovern über ein Element erscheint ein 4-spaltiges Info-Panel zwischen Bery
 ### 📱 Legend
 Visual legend mit Farbcodes für alle Elementkategorien - hilft beim schnellen Verständnis der Elementtypen
 
+## 📸 Screenshots
+
+### Dark Mode
+![Periodic Table - Dark Mode](./screenshots/periodic-table-dark.png)
+
+### Light Mode
+![Periodic Table - Light Mode](./screenshots/periodic-table-light.png)
+
 ## 🎯 Verwendung
 
 ### Theme wechseln
