@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modernes Periodensystem - 118 Elemente</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --panel-bg: rgba(30, 41, 59, 0.85);
+            --periodic-bg: rgba(30, 41, 59, 0.4);
+
+            /* Kategorie-Farben */
+            --nonmetal: #22d3ee;
+            --noble-gas: #c084fc;
+            --alkali-metal: #fb7185;
+            --alkaline-earth: #facc15;
+            --metalloid: #4ade80;
+            --halogen: #38bdf8;
+            --transition-metal: #f87171;
+            --post-transition: #a78bfa;
+            --lanthanide: #fb923c;
+            --actinide: #f472b6;
+            --unknown: #64748b;
+        }
+
+        body.light-theme {
+            --bg-color: #ffffff;
+            --text-main: #000000;
+            --text-muted: #333333;
+            --panel-bg: rgba(240, 245, 250, 0.98);
+            --periodic-bg: rgba(245, 250, 255, 0.7);
+
+            /* Kategorie-Farben Light Theme */
+            --nonmetal: #0891b2;
+            --noble-gas: #7c3aed;
+            --alkali-metal: #dc2626;
+            --alkaline-earth: #d97706;
+            --metalloid: #16a34a;
+            --halogen: #0284c7;
+            --transition-metal: #e11d48;
+            --post-transition: #6d28d9;
+            --lanthanide: #c2410c;
+            --actinide: #be185d;
+            --unknown: #4b5563;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-color) 0%, #1e293b 100%);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .periodic-table {
+            display: grid;
+            grid-template-columns: repeat(18, 80px);
+            grid-template-rows: repeat(10, 80px);
+            gap: 8px;
+            position: relative;
+            padding: 2.5rem;
+            background: var(--periodic-bg);
+            border-radius: 24px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 70px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Infopanel */
+        .info-panel {
+            grid-column: 3 / 9;
+            grid-row: 1 / 4;
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95));
+            backdrop-filter: blur(20px);
+            border-radius: 12px;
+            padding: 1rem;
+            border: 1.5px solid rgba(255, 255, 255, 0.15);
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+            z-index: 5;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transform: translateY(-10px);
+            gap: 6px;
+        }
+
+        .info-panel.active {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .info-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 6px;
+        }
+
+        .info-symbol {
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1;
+            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
+            flex-shrink: 0;
+        }
+
+        .info-name {
+            font-size: 0.9rem;
+            color: var(--text-main);
+            font-weight: 600;
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* Light Theme Info Panel */
+        body.light-theme .info-panel {
+            background: linear-gradient(135deg, rgba(240, 245, 250, 0.98), rgba(255, 255, 255, 0.95));
+            border: 1.5px solid rgba(0, 0, 0, 0.15);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        }
+
+        body.light-theme .info-header {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        body.light-theme .info-item {
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        body.light-theme .info-label {
+            color: #555555;
+        }
+
+        body.light-theme .info-value {
+            color: var(--text-main);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            font-size: 0.75rem;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            padding: 6px 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .info-label {
+            color: var(--text-muted);
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            opacity: 0.8;
+        }
+
+        .info-value {
+            font-weight: 500;
+            color: var(--text-main);
+            font-size: 0.75rem;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .element {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 6px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1.5px solid transparent;
+            overflow: hidden;
+        }
+
+        .element::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 10px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .element:hover {
+            transform: scale(1.1) translateY(-4px);
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.5);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 0 30px rgba(255, 255, 255, 0.1);
+        }
+
+        .el-number {
+            font-size: 0.65rem;
+            position: absolute;
+            top: 5px;
+            left: 6px;
+            opacity: 0.7;
+            font-weight: 600;
+        }
+
+        .el-symbol {
+            font-size: 1.3rem;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+
+        .el-name {
+            font-size: 0.6rem;
+            text-align: center;
+            margin-top: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+            font-weight: 500;
+            opacity: 0.9;
+        }
+
+        #loading {
+            grid-column: 1 / -1;
+            grid-row: 5;
+            text-align: center;
+            font-size: 1.3rem;
+            color: var(--text-muted);
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Legend styles */
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: rgba(30, 41, 59, 0.4);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 1500px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
+            border: 1.5px solid currentColor;
+            opacity: 0.8;
+        }
+
+        /* Wikipedia Icon on Element */
+        .element::after {
+            content: '📖';
+            position: absolute;
+            top: 3px;
+            right: 3px;
+            font-size: 0.8rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .element:hover::after {
+            opacity: 1;
+        }
+
+        /* Kategorie-Klassen */
+        .cat-nonmetal { background: rgba(34, 211, 238, 0.2); color: var(--nonmetal); border-color: rgba(34, 211, 238, 0.4); }
+        .cat-nonmetal:hover { box-shadow: 0 12px 30px rgba(34, 211, 238, 0.25), 0 0 20px rgba(34, 211, 238, 0.3) !important; }
+
+        .cat-noble-gas { background: rgba(192, 132, 252, 0.2); color: var(--noble-gas); border-color: rgba(192, 132, 252, 0.4); }
+        .cat-noble-gas:hover { box-shadow: 0 12px 30px rgba(192, 132, 252, 0.25), 0 0 20px rgba(192, 132, 252, 0.3) !important; }
+
+        .cat-alkali-metal { background: rgba(251, 113, 133, 0.2); color: var(--alkali-metal); border-color: rgba(251, 113, 133, 0.4); }
+        .cat-alkali-metal:hover { box-shadow: 0 12px 30px rgba(251, 113, 133, 0.25), 0 0 20px rgba(251, 113, 133, 0.3) !important; }
+
+        .cat-alkaline-earth { background: rgba(250, 204, 21, 0.2); color: var(--alkaline-earth); border-color: rgba(250, 204, 21, 0.4); }
+        .cat-alkaline-earth:hover { box-shadow: 0 12px 30px rgba(250, 204, 21, 0.2), 0 0 20px rgba(250, 204, 21, 0.3) !important; }
+
+        .cat-metalloid { background: rgba(74, 222, 128, 0.2); color: var(--metalloid); border-color: rgba(74, 222, 128, 0.4); }
+        .cat-metalloid:hover { box-shadow: 0 12px 30px rgba(74, 222, 128, 0.25), 0 0 20px rgba(74, 222, 128, 0.3) !important; }
+
+        .cat-halogen { background: rgba(56, 189, 248, 0.2); color: var(--halogen); border-color: rgba(56, 189, 248, 0.4); }
+        .cat-halogen:hover { box-shadow: 0 12px 30px rgba(56, 189, 248, 0.25), 0 0 20px rgba(56, 189, 248, 0.3) !important; }
+
+        .cat-transition-metal { background: rgba(248, 113, 113, 0.2); color: var(--transition-metal); border-color: rgba(248, 113, 113, 0.4); }
+        .cat-transition-metal:hover { box-shadow: 0 12px 30px rgba(248, 113, 113, 0.25), 0 0 20px rgba(248, 113, 113, 0.3) !important; }
+
+        .cat-post-transition { background: rgba(167, 139, 250, 0.2); color: var(--post-transition); border-color: rgba(167, 139, 250, 0.4); }
+        .cat-post-transition:hover { box-shadow: 0 12px 30px rgba(167, 139, 250, 0.25), 0 0 20px rgba(167, 139, 250, 0.3) !important; }
+
+        .cat-lanthanide { background: rgba(251, 146, 60, 0.2); color: var(--lanthanide); border-color: rgba(251, 146, 60, 0.4); }
+        .cat-lanthanide:hover { box-shadow: 0 12px 30px rgba(251, 146, 60, 0.25), 0 0 20px rgba(251, 146, 60, 0.3) !important; }
+
+        .cat-actinide { background: rgba(244, 114, 182, 0.2); color: var(--actinide); border-color: rgba(244, 114, 182, 0.4); }
+        .cat-actinide:hover { box-shadow: 0 12px 30px rgba(244, 114, 182, 0.25), 0 0 20px rgba(244, 114, 182, 0.3) !important; }
+
+        .cat-unknown { background: rgba(100, 116, 139, 0.2); color: var(--unknown); border-color: rgba(100, 116, 139, 0.4); }
+        .cat-unknown:hover { box-shadow: 0 12px 30px rgba(100, 116, 139, 0.2), 0 0 20px rgba(100, 116, 139, 0.2) !important; }
+
+        /* Light Theme - Element Kategorien mit höherem Kontrast */
+        body.light-theme .cat-nonmetal { background: rgba(8, 145, 178, 0.25); border-color: rgba(8, 145, 178, 0.6); }
+        body.light-theme .cat-nonmetal:hover { box-shadow: 0 12px 30px rgba(8, 145, 178, 0.3), 0 0 20px rgba(8, 145, 178, 0.4) !important; }
+
+        body.light-theme .cat-noble-gas { background: rgba(124, 58, 237, 0.2); border-color: rgba(124, 58, 237, 0.6); }
+        body.light-theme .cat-noble-gas:hover { box-shadow: 0 12px 30px rgba(124, 58, 237, 0.25), 0 0 20px rgba(124, 58, 237, 0.3) !important; }
+
+        body.light-theme .cat-alkali-metal { background: rgba(220, 38, 38, 0.2); border-color: rgba(220, 38, 38, 0.6); }
+        body.light-theme .cat-alkali-metal:hover { box-shadow: 0 12px 30px rgba(220, 38, 38, 0.25), 0 0 20px rgba(220, 38, 38, 0.3) !important; }
+
+        body.light-theme .cat-alkaline-earth { background: rgba(217, 119, 6, 0.2); border-color: rgba(217, 119, 6, 0.6); }
+        body.light-theme .cat-alkaline-earth:hover { box-shadow: 0 12px 30px rgba(217, 119, 6, 0.2), 0 0 20px rgba(217, 119, 6, 0.3) !important; }
+
+        body.light-theme .cat-metalloid { background: rgba(22, 163, 74, 0.2); border-color: rgba(22, 163, 74, 0.6); }
+        body.light-theme .cat-metalloid:hover { box-shadow: 0 12px 30px rgba(22, 163, 74, 0.25), 0 0 20px rgba(22, 163, 74, 0.3) !important; }
+
+        body.light-theme .cat-halogen { background: rgba(2, 132, 199, 0.2); border-color: rgba(2, 132, 199, 0.6); }
+        body.light-theme .cat-halogen:hover { box-shadow: 0 12px 30px rgba(2, 132, 199, 0.25), 0 0 20px rgba(2, 132, 199, 0.3) !important; }
+
+        body.light-theme .cat-transition-metal { background: rgba(225, 29, 72, 0.2); border-color: rgba(225, 29, 72, 0.6); }
+        body.light-theme .cat-transition-metal:hover { box-shadow: 0 12px 30px rgba(225, 29, 72, 0.25), 0 0 20px rgba(225, 29, 72, 0.3) !important; }
+
+        body.light-theme .cat-post-transition { background: rgba(109, 40, 217, 0.2); border-color: rgba(109, 40, 217, 0.6); }
+        body.light-theme .cat-post-transition:hover { box-shadow: 0 12px 30px rgba(109, 40, 217, 0.25), 0 0 20px rgba(109, 40, 217, 0.3) !important; }
+
+        body.light-theme .cat-lanthanide { background: rgba(194, 65, 12, 0.2); border-color: rgba(194, 65, 12, 0.6); }
+        body.light-theme .cat-lanthanide:hover { box-shadow: 0 12px 30px rgba(194, 65, 12, 0.25), 0 0 20px rgba(194, 65, 12, 0.3) !important; }
+
+        body.light-theme .cat-actinide { background: rgba(190, 24, 93, 0.2); border-color: rgba(190, 24, 93, 0.6); }
+        body.light-theme .cat-actinide:hover { box-shadow: 0 12px 30px rgba(190, 24, 93, 0.25), 0 0 20px rgba(190, 24, 93, 0.3) !important; }
+
+        body.light-theme .cat-unknown { background: rgba(75, 85, 99, 0.2); border-color: rgba(75, 85, 99, 0.6); }
+        body.light-theme .cat-unknown:hover { box-shadow: 0 12px 30px rgba(75, 85, 99, 0.2), 0 0 20px rgba(75, 85, 99, 0.2) !important; }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(59, 130, 246, 0.1));
+            border: 1.5px solid rgba(59, 130, 246, 0.4);
+            border-radius: 50px;
+            padding: 10px 16px;
+            color: var(--text-main);
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+
+        .theme-toggle:hover {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.35), rgba(59, 130, 246, 0.25));
+            border-color: rgba(59, 130, 246, 0.6);
+            transform: scale(1.05);
+        }
+
+    </style>
+</head>
+<body>
+    <button class="theme-toggle" id="themeToggle">🌙 Dark</button>
+
+    <div class="legend" id="legend">
+        <div class="legend-item"><div class="legend-color" style="background: rgba(251, 113, 133, 0.2); border-color: #fb7185;"></div><span>Alkalimetalle</span></div>
+        <div class="legend-item"><div class="legend-color" style="background: rgba(250, 204, 21, 0.2); border-color: #facc15;"></div><span>Erdalkalimetalle</span></div>
+        <div class="legend-item"><div class="legend-color" style="background: rgba(248, 113, 113, 0.2); border-color: #f87171;"></div><span>Übergangsmetalle</span></div>
+        <div class="legend-item"><div class="legend-color" style="background: rgba(34, 211, 238, 0.2); border-color: #22d3ee;"></div><span>Nichtmetalle</span></div>
+        <div class="legend-item"><div class="legend-color" style="background: rgba(192, 132, 252, 0.2); border-color: #c084fc;"></div><span>Edelgase</span></div>
+        <div class="legend-item"><div class="legend-color" style="background: rgba(251, 146, 60, 0.2); border-color: #fb923c;"></div><span>Lanthanide</span></div>
+        <div class="legend-item"><div class="legend-color" style="background: rgba(244, 114, 182, 0.2); border-color: #f472b6;"></div><span>Actinide</span></div>
+    </div>
+
+    <div class="periodic-table" id="table">
+        <div id="loading">Lade 118 Elemente...</div>
+        
+        <div class="info-panel" id="infoPanel">
+            <div class="info-header">
+                <span class="info-symbol" id="infoSymbol"></span>
+                <span class="info-name" id="infoName"></span>
+                <span class="info-name" id="infoNumber"></span>
+            </div>
+            <div class="info-grid">
+                <div class="info-item"><span class="info-label">Zustand</span><span class="info-value" id="infoState"></span></div>
+                <div class="info-item"><span class="info-label">Dichte</span><span class="info-value" id="infoDensity"></span></div>
+                <div class="info-item"><span class="info-label">Schmelzpunkt</span><span class="info-value" id="infoMelting"></span></div>
+                <div class="info-item"><span class="info-label">Siedepunkt</span><span class="info-value" id="infoBoiling"></span></div>
+                <div class="info-item"><span class="info-label">P/N</span><span class="info-value" id="infoPN"></span></div>
+                <div class="info-item"><span class="info-label">Kategorie</span><span class="info-value" id="infoCategory"></span></div>
+                <div class="info-item"><span class="info-label">Gewicht</span><span class="info-value" id="infoIsotope"></span></div>
+                <div class="info-item"><span class="info-label">Config</span><span class="info-value" id="infoElectron" style="font-size: 0.65rem; line-height: 1.2;"></span></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const table = document.getElementById('table');
+        const infoPanel = document.getElementById('infoPanel');
+        const loading = document.getElementById('loading');
+        const themeToggle = document.getElementById('themeToggle');
+        let hideTimeout;
+
+        // Theme Toggle
+        const isDarkMode = !localStorage.getItem('theme') || localStorage.getItem('theme') === 'dark';
+        if (!isDarkMode) {
+            document.body.classList.add('light-theme');
+            themeToggle.textContent = '☀️ Light';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            const isLight = document.body.classList.toggle('light-theme');
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+            themeToggle.textContent = isLight ? '☀️ Light' : '🌙 Dark';
+        });
+
+        // Übersetzungen für Elementnamen
+        const nameTranslations = {
+            "Hydrogen": "Wasserstoff", "Helium": "Helium", "Lithium": "Lithium", "Beryllium": "Beryllium",
+            "Boron": "Bor", "Carbon": "Kohlenstoff", "Nitrogen": "Stickstoff", "Oxygen": "Sauerstoff",
+            "Fluorine": "Fluor", "Neon": "Neon", "Sodium": "Natrium", "Magnesium": "Magnesium",
+            "Aluminum": "Aluminium", "Silicon": "Silicium", "Phosphorus": "Phosphor", "Sulfur": "Schwefel",
+            "Chlorine": "Chlor", "Argon": "Argon", "Potassium": "Kalium", "Calcium": "Calcium",
+            "Scandium": "Scandium", "Titanium": "Titan", "Vanadium": "Vanadium", "Chromium": "Chrom",
+            "Manganese": "Mangan", "Iron": "Eisen", "Cobalt": "Cobalt", "Nickel": "Nickel",
+            "Copper": "Kupfer", "Zinc": "Zink", "Gallium": "Gallium", "Germanium": "Germanium",
+            "Arsenic": "Arsen", "Selenium": "Selen", "Bromine": "Brom", "Krypton": "Krypton",
+            "Rubidium": "Rubidium", "Strontium": "Strontium", "Yttrium": "Yttrium", "Zirconium": "Zirconium",
+            "Niobium": "Niob", "Molybdenum": "Molybdän", "Technetium": "Technetium", "Ruthenium": "Ruthenium",
+            "Rhodium": "Rhodium", "Palladium": "Palladium", "Silver": "Silber", "Cadmium": "Cadmium",
+            "Indium": "Indium", "Tin": "Zinn", "Antimony": "Antimon", "Tellurium": "Tellur",
+            "Iodine": "Iod", "Xenon": "Xenon", "Cesium": "Caesium", "Barium": "Barium",
+            "Lanthanum": "Lanthan", "Cerium": "Cer", "Praseodymium": "Praseodym", "Neodymium": "Neodym",
+            "Promethium": "Promethium", "Samarium": "Samarium", "Europium": "Europium", "Gadolinium": "Gadolinium",
+            "Terbium": "Terbium", "Dysprosium": "Dysprosium", "Holmium": "Holmium", "Erbium": "Erbium",
+            "Thulium": "Thulium", "Ytterbium": "Ytterbium", "Lutetium": "Lutetium", "Hafnium": "Hafnium",
+            "Tantalum": "Tantal", "Tungsten": "Wolfram", "Rhenium": "Rhenium", "Osmium": "Osmium",
+            "Iridium": "Iridium", "Platinum": "Platin", "Gold": "Gold", "Mercury": "Quecksilber",
+            "Thallium": "Thallium", "Lead": "Blei", "Bismuth": "Bismut", "Polonium": "Polonium",
+            "Astatine": "Astat", "Radon": "Radon", "Francium": "Francium", "Radium": "Radium",
+            "Actinium": "Actinium", "Thorium": "Thorium", "Protactinium": "Protactinium", "Uranium": "Uran",
+            "Neptunium": "Neptunium", "Plutonium": "Plutonium", "Americium": "Americium", "Curium": "Curium",
+            "Berkelium": "Berkelium", "Californium": "Californium", "Einsteinium": "Einsteinium", "Fermium": "Fermium",
+            "Mendelevium": "Mendelevium", "Nobelium": "Nobelium", "Lawrencium": "Lawrencium", "Rutherfordium": "Rutherfordium",
+            "Dubnium": "Dubnium", "Seaborgium": "Seaborgium", "Bohrium": "Bohrium", "Hassium": "Hassium",
+            "Meitnerium": "Meitnerium", "Darmstadtium": "Darmstadtium", "Roentgenium": "Roentgenium", "Copernicium": "Copernicium",
+            "Nihonium": "Nihonium", "Flerovium": "Flerovium", "Moscovium": "Moscovium", "Livermorium": "Livermorium",
+            "Tennessine": "Tenness", "Oganesson": "Oganesson"
+        };
+
+        // Übersetzungen für Kategorien
+        const categoryTranslations = {
+            'alkali metal': 'Alkalimetall',
+            'alkaline earth metal': 'Erdalkalimetall',
+            'noble gas': 'Edelgas',
+            'halogen': 'Halogen',
+            'transition metal': 'Übergangsmetall',
+            'post-transition metal': 'Metalle (Nachübergangsmetalle)',
+            'lanthanide': 'Lanthanoid',
+            'actinide': 'Actinoid',
+            'metalloid': 'Halbmetall',
+            'diatomic nonmetal': 'Nichtmetall',
+            'polyatomic nonmetal': 'Nichtmetall',
+            'unknown, probably transition metal': 'Unbekannt (vermutlich Übergangsmetall)',
+            'unknown, probably post-transition metal': 'Unbekannt (vermutlich Metall)',
+            'unknown, probably metalloid': 'Unbekannt (vermutlich Halbmetall)',
+            'unknown, predicted to be noble gas': 'Unbekannt (vermutlich Edelgas)'
+        };
+
+        // Übersetzungen für Aggregatzustände
+        const stateTranslations = {
+            'Gas': 'Gasförmig',
+            'Solid': 'Fest',
+            'Liquid': 'Flüssig'
+        };
+
+        function getCategoryClass(category) {
+            if (!category) return 'cat-unknown';
+            const cat = category.toLowerCase();
+            if (cat.includes('alkali metal')) return 'cat-alkali-metal';
+            if (cat.includes('alkaline earth metal')) return 'cat-alkaline-earth';
+            if (cat.includes('noble gas')) return 'cat-noble-gas';
+            if (cat.includes('halogen')) return 'cat-halogen';
+            if (cat.includes('transition metal') && !cat.includes('post')) return 'cat-transition-metal';
+            if (cat.includes('post-transition metal')) return 'cat-post-transition';
+            if (cat.includes('lanthanide')) return 'cat-lanthanide';
+            if (cat.includes('actinide')) return 'cat-actinide';
+            if (cat.includes('metalloid')) return 'cat-metalloid';
+            if (cat.includes('nonmetal')) return 'cat-nonmetal';
+            return 'cat-unknown';
+        }
+
+        fetch('https://raw.githubusercontent.com/Bowserinator/Periodic-Table-JSON/master/PeriodicTableJSON.json')
+            .then(response => response.json())
+            .then(data => {
+                loading.style.display = 'none'; 
+                
+                data.elements.forEach(el => {
+                    const elDiv = document.createElement('div');
+                    const catClass = getCategoryClass(el.category);
+                    
+                    // Elementnamen übersetzen (Fallback auf Originalname, falls nicht im Lexikon)
+                    const germanName = nameTranslations[el.name] || el.name;
+
+                    elDiv.className = `element ${catClass}`;
+                    elDiv.style.gridColumn = el.xpos;
+                    elDiv.style.gridRow = el.ypos; 
+
+                    elDiv.innerHTML = `
+                        <span class="el-number">${el.number}</span>
+                        <span class="el-symbol">${el.symbol}</span>
+                        <span class="el-name">${germanName}</span>
+                    `;
+
+                    elDiv.addEventListener('mouseenter', () => {
+                        clearTimeout(hideTimeout);
+                        updateInfo(el, catClass, germanName);
+                    });
+                    elDiv.addEventListener('mouseleave', () => {
+                        hideTimeout = setTimeout(() => {
+                            if (!infoPanel.matches(':hover')) {
+                                infoPanel.classList.remove('active');
+                            }
+                        }, 150);
+                    });
+                    elDiv.addEventListener('click', () => {
+                        window.open(`https://de.wikipedia.org/wiki/${germanName}`, '_blank');
+                    });
+
+                    table.appendChild(elDiv);
+                });
+            })
+            .catch(err => {
+                loading.textContent = "Fehler beim Laden der Elemente. Bitte überprüfe deine Verbindung.";
+                console.error(err);
+            });
+
+        // Info panel hover events
+        infoPanel.addEventListener('mouseenter', () => {
+            clearTimeout(hideTimeout);
+            infoPanel.classList.add('active');
+        });
+        infoPanel.addEventListener('mouseleave', () => {
+            hideTimeout = setTimeout(() => {
+                infoPanel.classList.remove('active');
+            }, 150);
+        });
+
+        function updateInfo(el, catClass, germanName) {
+            const symbolEl = document.getElementById('infoSymbol');
+            symbolEl.textContent = el.symbol;
+            symbolEl.style.color = getComputedStyle(document.documentElement).getPropertyValue(`--${catClass.replace('cat-', '')}`);
+            
+            document.getElementById('infoName').textContent = germanName;
+            document.getElementById('infoNumber').textContent = `(Ordnungszahl: ${el.number})`;
+            
+            const neutrons = Math.round(el.atomic_mass) - el.number;
+
+            const translatedPhase = stateTranslations[el.phase] || el.phase || 'Unbekannt';
+            const translatedCategory = categoryTranslations[el.category.toLowerCase()] || el.category;
+
+            document.getElementById('infoState').textContent = translatedPhase;
+            document.getElementById('infoDensity').textContent = el.density ? `${el.density.toFixed(1)}` : 'k.A.';
+            document.getElementById('infoMelting').textContent = el.melt ? `${el.melt.toFixed(0)}K` : 'k.A.';
+            document.getElementById('infoBoiling').textContent = el.boil ? `${el.boil.toFixed(0)}K` : 'k.A.';
+            document.getElementById('infoPN').textContent = `${el.number}/${neutrons}`;
+            document.getElementById('infoCategory').textContent = translatedCategory;
+
+            // Elektronenkonfiguration gekürzt (nur letzte 30 Zeichen)
+            const electronConfig = el.electron_configuration || 'Unbekannt';
+            const shortElectron = electronConfig.length > 30 ? '...' + electronConfig.slice(-27) : electronConfig;
+            document.getElementById('infoElectron').textContent = shortElectron;
+            document.getElementById('infoIsotope').textContent = `${el.atomic_mass.toFixed(2)}`;
+
+            infoPanel.classList.add('active');
+        }
+    </script>
+</body>
+</html>
