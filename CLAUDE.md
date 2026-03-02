@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Modernes Periodensystem** - A modern, interactive periodic table with dark/light theme support, detailed element information panel, and Wikipedia integration.
 
-This is a **single-page application** with no build tools. The main file is `gemini_table.html` containing:
+This is a **single-page application** with no build tools. The main file is `index.html` containing:
 - HTML structure
 - CSS styling (with theme variables)
 - Vanilla JavaScript (ES6+)
@@ -23,9 +23,17 @@ This is a **single-page application** with no build tools. The main file is `gem
    - Each element is an interactive card with category-colored hover effects
    - Wikipedia icon appears on hover, click to open German Wikipedia page
 
-2. **Info Panel** (Ultra-Compact 4-Column Layout)
+2. **Info Panel** (Ultra-Compact 4-Column Layout with Bohr Model)
    - **Position:** grid-column 3/13, grid-row 1/4 (between Beryllium and Boron)
-   - **Layout:** 4 columns × 2 rows = 8 fields
+   - **Layout:** Horizontal flex — Bohr canvas (left) + info content (right)
+   - **Bohr Model Canvas** (150×150px):
+     - Animated 3D atom model using `<canvas>` and `requestAnimationFrame`
+     - **Nucleus:** Individual protons (red, `#ef4444`) and neutrons (white, `#e2e8f0`) arranged as a rotating 3D sphere using Fibonacci distribution
+     - **Electron shells:** Blue electrons (`#60a5fa`) orbiting on 3D-inclined paths — each shell has a unique inclination and azimuth angle
+     - Depth-based sizing and brightness (z-sorting, back-to-front rendering)
+     - `drawBohrModel(el, catClass)` starts animation, `stopBohrAnimation()` stops it when panel hides
+     - Uses `el.shells` array from API for electron counts per shell
+   - **Info Content:** `.info-content` wrapper containing header + 4×2 grid
    - **Fields displayed:**
      - Row 1: Zustand | Dichte | Schmelzpunkt | Siedepunkt
      - Row 2: P/N | Kategorie | A-Gewicht | E-Config
@@ -59,7 +67,8 @@ This is a **single-page application** with no build tools. The main file is `gem
   melt: 13.81,
   boil: 20.28,
   electron_configuration: "1s¹",
-  category: "diatomic nonmetal"
+  category: "diatomic nonmetal",
+  shells: [1]  // electrons per shell, used for Bohr model
 }
 
 // Translations (English → German)
@@ -90,6 +99,11 @@ Light theme (`body.light-theme`):
 - **Info panel sizing**: Edit `.info-grid` (currently `grid-template-columns: 1fr 1fr 1fr 1fr`)
   - Item sizes: `.info-label` (0.4rem), `.info-value` (0.5rem)
   - Panel dimensions: grid-column 3/13, grid-row 1/4, padding 0.8rem
+  - Panel is `flex-direction: row` with `.bohr-canvas` (left) and `.info-content` (right)
+- **Bohr model**: Edit `drawBohrModel()` function for nucleus/electron appearance
+  - Nucleus size scales with `∛(totalNucleons)`, dot size adapts automatically
+  - Shell inclinations computed via golden angle distribution in `shellInclinations`
+  - Electron color: `#60a5fa`, Proton color: `#ef4444`, Neutron color: `#e2e8f0`
 - **Theme colors**: Edit `:root` (dark) or `body.light-theme` CSS variables
 - **Hover effects**: Category-specific glows in `.cat-*:hover` rules
 
@@ -107,9 +121,9 @@ Light theme (`body.light-theme`):
 - To add new translations or update existing: edit the object directly
 
 ### Event Handling
-- **Element hover**: `mouseenter` → calls `updateInfo()`, `mouseleave` → schedules panel hide
+- **Element hover**: `mouseenter` → calls `updateInfo()` + `drawBohrModel()`, `mouseleave` → schedules panel hide + `stopBohrAnimation()`
 - **Element click**: Opens Wikipedia link in new tab
-- **Panel hover**: `mouseenter` clears hide timer, `mouseleave` schedules hide
+- **Panel hover**: `mouseenter` clears hide timer, `mouseleave` schedules hide + stops Bohr animation
 - **Theme toggle**: Toggles `light-theme` class, updates button text, persists to localStorage
 
 ## Key Implementation Details
@@ -137,7 +151,7 @@ Categories are mapped from JSON category string to CSS class:
 
 ## Files
 
-- `gemini_table.html` - Single file with HTML, CSS, JavaScript (all-in-one)
+- `index.html` - Single file with HTML, CSS, JavaScript (all-in-one)
 - `README.md` - User documentation
 - `CLAUDE.md` - This file
 
@@ -146,6 +160,7 @@ Categories are mapped from JSON category string to CSS class:
 - **118 elements** created dynamically on page load (no pre-rendering)
 - **Compact layout:** 60×60px elements + 6px gap fit entire periodic table on most screens
 - **Smooth animations:** CSS `transition` with `cubic-bezier(0.4, 0, 0.2, 1)` easing
+- **Canvas animation:** Bohr model uses `requestAnimationFrame` loop, cancelled on panel hide to avoid idle GPU usage
 - **Hover effects:** Category-colored glows (`box-shadow`) and scale transforms (GPU-accelerated)
 - **Smart timeouts:** 150ms delay on element mouseleave prevents flickering during panel hover
 - **LocalStorage:** Theme preference saved to avoid recalculation

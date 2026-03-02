@@ -19,6 +19,13 @@ Ein interaktives, hochoptimiertes Periodensystem mit Dark/Light Theme, kompaktem
   - Halbmetalle, Lanthanide, Actinide
   - Post-Übergansmetalle, Unbekannte Elemente
 
+### ⚛️ Animiertes 3D Bohr-Atommodell
+Beim Hovern über ein Element erscheint ein animiertes Bohr-Modell im Info-Panel:
+- **Kern** - Protonen (rot) und Neutronen (weiß) als rotierende 3D-Kugel mit Fibonacci-Verteilung
+- **Elektronenschalen** - Blaue Elektronen kreisen auf 3D-inklinatierten Bahnen mit verschiedenen Neigungswinkeln
+- **Tiefeneffekt** - Z-Sorting, tiefenbasierte Größe und Helligkeit für räumliche Darstellung
+- **Skalierung** - Kerngröße und Nukleonenpunkte passen sich automatisch an (H = 1 Proton, Og = 294 Nukleonen)
+
 ### 📊 Ultra-Kompaktes Info-Panel
 Beim Hovern über ein Element erscheint ein 4-spaltiges Info-Panel zwischen Beryllium und Bor:
 - **Symbol & Name** - Elementsymbol mit deutschem Namen
@@ -57,7 +64,7 @@ Visual legend mit Farbcodes für alle Elementkategorien - hilft beim schnellen V
 
 ### Element-Informationen anzeigen
 1. Fahre mit der Maus über ein Element
-2. Info-Panel erscheint mit allen Details
+2. Info-Panel erscheint mit animiertem 3D Bohr-Modell und allen Details
 3. Bleibe über dem Panel, um es zu lesen
 
 ### Zu Wikipedia gehen
@@ -69,6 +76,7 @@ Visual legend mit Farbcodes für alle Elementkategorien - hilft beim schnellen V
 
 - **HTML5** - Semantische Struktur
 - **CSS3** - Modern Layout (Grid, Flexbox), Glasmorphismus, Gradients
+- **Canvas API** - Animiertes 3D Bohr-Atommodell mit requestAnimationFrame
 - **JavaScript (Vanilla)** - Keine Dependencies erforderlich
 - **API-Integration** - [Periodic-Table-JSON](https://github.com/Bowserinator/Periodic-Table-JSON)
 
@@ -105,7 +113,8 @@ Das Projekt lädt alle 118 Elemente live von einer externen JSON-API:
 
 - Lädt alle 118 Elemente dynamisch
 - Optimiert für schnelle Hover-Reaktionen
-- Smooth 60fps Animationen
+- Smooth 60fps Canvas-Animation (Bohr-Modell)
+- Animation stoppt automatisch beim Verlassen des Panels (kein idle GPU-Verbrauch)
 - LocalStorage für Theme-Persistenz
 
 ## 📄 Lizenz
