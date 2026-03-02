@@ -6,6 +6,7 @@ Ein interaktives, hochoptimiertes Periodensystem mit Dark/Light Theme, kompaktem
 
 **[➡️ Klick hier zur Live-Demo öffnen](https://helmutqualtinger.github.io/PeriodicTable/)**
 
+
 ## ✨ Features
 
 ### 🎨 Design & Styling

@@ -648,7 +648,15 @@
 
             const maxOrbitR = (Math.min(cx, cy)) - 6;
             const minOrbitR = nucleusR + 8;
-            const tilt = 0.55;
+
+            // Pre-compute unique 3D inclination per shell
+            // Each shell gets a different inclination (tilt from XY plane) and azimuth (rotation around Y)
+            const shellInclinations = shells.map((_, i) => {
+                const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+                const inclination = Math.PI * 0.15 + (i / Math.max(maxShells - 1, 1)) * Math.PI * 0.45;
+                const azimuth = goldenAngle * i * 2.5;
+                return { inclination, azimuth };
+            });
 
             // Pre-compute nucleon positions on a sphere (shuffled protons/neutrons)
             const nucleonPoints = fibonacciSphere(totalNucleons);
@@ -672,11 +680,36 @@
 
                 const items = [];
 
-                // Orbit ellipses
+                // Helper: rotate point by inclination and azimuth to get 3D orbit position
+                function orbitPoint3D(angle, r, incl, azim) {
+                    // Start in XY plane
+                    let x = r * Math.cos(angle);
+                    let y = r * Math.sin(angle);
+                    let z = 0;
+                    // Rotate around X axis by inclination
+                    const cosI = Math.cos(incl), sinI = Math.sin(incl);
+                    const y1 = y * cosI - z * sinI;
+                    const z1 = y * sinI + z * cosI;
+                    // Rotate around Y axis by azimuth
+                    const cosA = Math.cos(azim), sinA = Math.sin(azim);
+                    const x2 = x * cosA + z1 * sinA;
+                    const z2 = -x * sinA + z1 * cosA;
+                    return { x: x2, y: y1, z: z2 };
+                }
+
+                // Orbit ellipses — draw as sampled 3D paths
                 for (let i = 0; i < maxShells; i++) {
                     const r = minOrbitR + (maxOrbitR - minOrbitR) * (i / Math.max(maxShells - 1, 1));
-                    const shellTilt = (i / Math.max(maxShells - 1, 1)) * Math.PI * 0.4 - Math.PI * 0.2;
-                    items.push({ type: 'orbit', r, shellTilt, z: -1000 + i });
+                    const { inclination, azimuth } = shellInclinations[i];
+                    // Sample orbit path as projected 2D points
+                    const steps = 80;
+                    const orbitPath = [];
+                    for (let s = 0; s <= steps; s++) {
+                        const a = (s / steps) * Math.PI * 2;
+                        const p = orbitPoint3D(a, r, inclination, azimuth);
+                        orbitPath.push({ x: cx + p.x, y: cy + p.y });
+                    }
+                    items.push({ type: 'orbit', path: orbitPath, z: -1000 + i });
                 }
 
                 // Electrons
@@ -684,16 +717,11 @@
                     const r = minOrbitR + (maxOrbitR - minOrbitR) * (i / Math.max(maxShells - 1, 1));
                     const electronCount = shells[i];
                     const speed = 3 / (i + 1);
-                    const shellTilt = (i / Math.max(maxShells - 1, 1)) * Math.PI * 0.4 - Math.PI * 0.2;
+                    const { inclination, azimuth } = shellInclinations[i];
                     for (let j = 0; j < electronCount; j++) {
                         const angle = bohrAngle * speed + (j * 2 * Math.PI / electronCount);
-                        const x3d = r * Math.cos(angle);
-                        const y3d = r * Math.sin(angle) * tilt;
-                        const z3d = r * Math.sin(angle) * Math.cos(shellTilt) * 0.5;
-                        const rotAngle = shellTilt;
-                        const ex = cx + x3d * Math.cos(rotAngle) - y3d * Math.sin(rotAngle) * 0.3;
-                        const ey = cy + x3d * Math.sin(rotAngle) * 0.3 + y3d * Math.cos(rotAngle);
-                        items.push({ type: 'electron', x: ex, y: ey, z: z3d });
+                        const p = orbitPoint3D(angle, r, inclination, azimuth);
+                        items.push({ type: 'electron', x: cx + p.x, y: cy + p.y, z: p.z });
                     }
                 }
 
@@ -727,29 +755,27 @@
 
                 for (const item of items) {
                     if (item.type === 'orbit') {
-                        const r = item.r;
-                        bohrCtx.save();
-                        bohrCtx.translate(cx, cy);
-                        bohrCtx.rotate(item.shellTilt);
-                        bohrCtx.scale(1, tilt);
                         bohrCtx.beginPath();
-                        bohrCtx.arc(0, 0, r, 0, Math.PI * 2);
+                        bohrCtx.moveTo(item.path[0].x, item.path[0].y);
+                        for (let k = 1; k < item.path.length; k++) {
+                            bohrCtx.lineTo(item.path[k].x, item.path[k].y);
+                        }
+                        bohrCtx.closePath();
                         bohrCtx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
                         bohrCtx.lineWidth = 1;
                         bohrCtx.stroke();
-                        bohrCtx.restore();
                     } else if (item.type === 'electron') {
                         const depthScale = 0.7 + 0.3 * ((item.z + maxOrbitR) / (2 * maxOrbitR));
                         const dotR = 2.5 * depthScale;
                         bohrCtx.beginPath();
                         bohrCtx.arc(item.x, item.y, dotR, 0, Math.PI * 2);
                         bohrCtx.globalAlpha = 0.5 + 0.5 * depthScale;
-                        bohrCtx.fillStyle = catColor;
+                        bohrCtx.fillStyle = '#60a5fa';
                         bohrCtx.fill();
                         bohrCtx.beginPath();
                         bohrCtx.arc(item.x, item.y, dotR + 3, 0, Math.PI * 2);
                         bohrCtx.globalAlpha = 0.15 * depthScale;
-                        bohrCtx.fillStyle = catColor;
+                        bohrCtx.fillStyle = '#60a5fa';
                         bohrCtx.fill();
                         bohrCtx.globalAlpha = 1;
                     } else if (item.type === 'nucleon') {
